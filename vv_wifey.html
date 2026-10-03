@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veux-tu être ma petite copine ? ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Dancing Script & Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff5f7 0%, #fed6e3 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .font-cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        /* Glassmorphism styling */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 20px 40px rgba(244, 63, 94, 0.12);
+        }
+
+        /* Canvas background */
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Smooth stage transitions */
+        .stage {
+            opacity: 0;
+            transform: scale(0.95) translateY(15px);
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .stage.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: auto;
+            position: relative;
+        }
+
+        /* Shimmer gradient button */
+        .btn-rose {
+            background-size: 200% auto;
+            background-image: linear-gradient(to right, #f43f5e 0%, #fb7185 51%, #f43f5e 100%);
+            transition: 0.4s;
+        }
+        .btn-rose:hover {
+            background-position: right center;
+        }
+
+        /* Dodging No button animation */
+        .playful-no {
+            transition: all 0.2s ease-out;
+        }
+
+        /* Fade animation for photo slides */
+        .slide-fade {
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-center items-center min-h-screen p-4 sm:p-6 select-none relative">
+
+    <!-- Floating background particle canvas -->
+    <canvas id="heartCanvas"></canvas>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-lg relative z-10 my-auto">
+
+        <!-- ================= ÉTAPE 1: LA DEMANDE INITIALE ================= -->
+        <section id="stage1" class="stage active">
+            <div class="glass-card rounded-3xl p-8 sm:p-10 text-center relative overflow-hidden">
+                <!-- Floating corner decoration icons -->
+                <i class="fa-solid fa-heart text-rose-300 text-3xl absolute top-4 left-4 transform -rotate-12"></i>
+                <i class="fa-solid fa-sparkles text-amber-300 text-2xl absolute bottom-4 right-4"></i>
+
+                <span class="inline-block px-4 py-1.5 bg-rose-100 text-rose-600 rounded-full text-xs font-semibold uppercase tracking-widest mb-4">
+                    Une question très spéciale ✨
+                </span>
+                
+                <h1 class="font-cursive text-5xl sm:text-6xl text-rose-600 mb-6 drop-shadow-sm leading-tight">
+                    Veux-tu être ma petite copine ? ❤️
+                </h1>
+
+                <p class="text-slate-600 text-sm sm:text-base mb-8 font-light">
+                    J'ai préparé quelques souvenirs pour toi avant que tu ne répondes...
+                </p>
+
+                <!-- Action Buttons -->
+                <div id="buttonContainer" class="flex flex-col sm:flex-row items-center justify-center gap-4 relative min-h-[120px]">
+                    <button id="yesStage1Btn" class="btn-rose w-full sm:w-auto px-8 py-3.5 rounded-full text-white font-bold text-lg shadow-lg hover:shadow-rose-300/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center space-x-2 cursor-pointer">
+                        <span>Oui ! 💖</span>
+                    </button>
+
+                    <button id="noBtn" class="playful-no px-6 py-3.5 rounded-full bg-slate-100 text-slate-500 font-medium text-base hover:bg-slate-200 transition-all cursor-pointer">
+                        <span>Non 🙈</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ================= ÉTAPE 2: LE CARROUSEL / ALBUM SOUVENIRS ================= -->
+        <section id="stage2" class="stage">
+            <div class="glass-card rounded-3xl p-6 sm:p-8 text-center relative">
+                
+                <div class="flex justify-between items-center mb-4 px-2">
+                    <span id="slideCounter" class="text-xs font-bold bg-rose-100 text-rose-600 px-3 py-1 rounded-full uppercase tracking-wider">
+                        Souvenir 1 / 4
+                    </span>
+                    <i class="fa-solid fa-heart text-rose-400 text-lg animate-pulse"></i>
+                </div>
+
+                <!-- Slide Container -->
+                <div id="photoSlide" class="slide-fade">
+                    <!-- Photo Container -->
+                    <div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-md mb-4 bg-rose-50 border-2 border-white">
+                        <img id="currentImage" 
+                             src="" 
+                             alt="Souvenir" 
+                             class="w-full h-full object-cover transition-all duration-300" 
+                             onerror="this.src='https://placehold.co/800x600/ffe4e6/e11d48?text=Image+Souvenir';" />
+                    </div>
+
+                    <!-- Caption -->
+                    <p id="currentCaption" class="text-slate-700 italic font-medium text-base sm:text-lg mb-6 px-2 min-h-[50px] flex items-center justify-center">
+                        <!-- Caption populated via JS -->
+                    </p>
+                </div>
+
+                <!-- Navigation Button -->
+                <button id="nextPhotoBtn" class="btn-rose w-full py-3.5 rounded-full text-white font-semibold text-base shadow-lg hover:shadow-rose-300/50 flex items-center justify-center space-x-2 group cursor-pointer">
+                    <span id="nextBtnText">Souvenir suivant ✨</span>
+                    <i id="nextBtnIcon" class="fa-solid fa-sparkles text-sm group-hover:rotate-12 transition-transform"></i>
+                </button>
+            </div>
+        </section>
+
+
+        <!-- ================= ÉTAPE 3: CÉLÉBRATION FINALE / FÉLICITATIONS ================= -->
+        <section id="stage3" class="stage">
+            <div class="glass-card rounded-3xl p-8 sm:p-10 text-center relative">
+                
+                <div class="w-20 h-20 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-4xl shadow-inner animate-bounce">
+                    🎉
+                </div>
+
+                <h2 class="font-cursive text-5xl sm:text-6xl text-rose-600 mb-3">
+                    Félicitations ! 💕
+                </h2>
+
+                <p class="text-slate-700 font-medium text-lg mb-6">
+                    Tu as dit oui ! C'est le début d'une magnifique aventure ensemble... 🥰
+                </p>
+
+                <!-- Heart felt note -->
+                <div class="bg-white/80 p-5 rounded-2xl border border-rose-100 text-slate-600 text-sm sm:text-base leading-relaxed mb-6 italic shadow-sm">
+                    « Merci d'être toi, de faire briller mes journées et de rendre chaque instant si précieux. Je t'aime fort ! ❤️ »
+                </div>
+
+                <div class="inline-flex items-center space-x-2 text-rose-500 font-semibold text-sm">
+                    <i class="fa-solid fa-heart"></i>
+                    <span>C'est officiel !</span>
+                    <i class="fa-solid fa-heart"></i>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 text-center text-xs text-rose-400 mt-6 font-medium">
+        Fait avec ❤️ pour toi
+    </footer>
+
+
+    <script>
+        // =========================================================================
+        // CONFIGURATION DES PHOTOS ET DES LÉGENDES (À PERSONNALISER ICI !)
+        // =========================================================================
+        const photos = [
+            {
+                // <!-- IMAGE_1_URL -->
+                url: "https://images.unsplash.com/photo-1518199266791-5375a83190b7?q=80&w=800&auto=format&fit=crop",
+                caption: "Le premier moment où mes yeux ont croisé les tiens... ✨"
+            },
+            {
+                // <!-- IMAGE_2_URL -->
+                url: "https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=800&auto=format&fit=crop",
+                caption: "Nos fous rires et nos balades inoubliables 🌸"
+            },
+            {
+                // <!-- IMAGE_3_URL -->
+                url: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?q=80&w=800&auto=format&fit=crop",
+                caption: "Chaque seconde passée à tes côtés est magique 💫"
+            },
+            {
+                // <!-- IMAGE_4_URL -->
+                url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop",
+                caption: "Et maintenant, la vraie question... Veux-tu être à moi ? ❤️"
+            }
+        ];
+
+        // =========================================================================
+        // DOM ELEMENTS & VARIABLES
+        // =========================================================================
+        let currentPhotoIndex = 0;
+
+        const stage1 = document.getElementById('stage1');
+        const stage2 = document.getElementById('stage2');
+        const stage3 = document.getElementById('stage3');
+
+        const yesStage1Btn = document.getElementById('yesStage1Btn');
+        const noBtn = document.getElementById('noBtn');
+        const nextPhotoBtn = document.getElementById('nextPhotoBtn');
+
+        const currentImage = document.getElementById('currentImage');
+        const currentCaption = document.getElementById('currentCaption');
+        const slideCounter = document.getElementById('slideCounter');
+        const nextBtnText = document.getElementById('nextBtnText');
+        const nextBtnIcon = document.getElementById('nextBtnIcon');
+        const photoSlide = document.getElementById('photoSlide');
+
+        // =========================================================================
+        // STAGE 1 LOGIC (YES / PLAYFUL NO BUTTON)
+        // =========================================================================
+
+        // Playful No Button dodge on hover/click
+        let noClickCount = 0;
+        const noMessages = ["Es-tu sûre ? 🥺", "Réfléchis bien... 💭", "Tu es certaine ? 🌹", "Dernière chance ! 😉"];
+
+        noBtn.addEventListener('mouseenter', dodgeNoButton);
+        noBtn.addEventListener('click', () => {
+            dodgeNoButton();
+            noClickCount++;
+            if (noClickCount < noMessages.length) {
+                noBtn.querySelector('span').innerText = noMessages[noClickCount];
+            }
+        });
+
+        function dodgeNoButton() {
+            const x = (Math.random() - 0.5) * 160;
+            const y = (Math.random() - 0.5) * 100;
+            noBtn.style.transform = `translate(${x}px, ${y}px)`;
+        }
+
+        // Click YES on Stage 1 -> Go to Stage 2 (Album)
+        yesStage1Btn.addEventListener('click', () => {
+            triggerHeartBurst();
+            goToStage(stage1, stage2);
+            loadPhoto(0);
+        });
+
+        // =========================================================================
+        // STAGE 2 LOGIC (PHOTO CAROUSEL)
+        // =========================================================================
+
+        function loadPhoto(index) {
+            photoSlide.classList.remove('slide-fade');
+            void photoSlide.offsetWidth; // Trigger reflow for animation
+            photoSlide.classList.add('slide-fade');
+
+            currentImage.src = photos[index].url;
+            currentCaption.innerText = photos[index].caption;
+            slideCounter.innerText = `Souvenir ${index + 1} / ${photos.length}`;
+
+            // If it's the last photo, change button text
+            if (index === photos.length - 1) {
+                nextBtnText.innerText = "Oui, je le veux ! ❤️";
+                nextBtnIcon.className = "fa-solid fa-heart";
+            } else {
+                nextBtnText.innerText = "Souvenir suivant ✨";
+                nextBtnIcon.className = "fa-solid fa-sparkles";
+            }
+        }
+
+        nextPhotoBtn.addEventListener('click', () => {
+            if (currentPhotoIndex < photos.length - 1) {
+                currentPhotoIndex++;
+                loadPhoto(currentPhotoIndex);
+            } else {
+                // End of album -> Go to Stage 3 (Celebration)
+                goToStage(stage2, stage3);
+                triggerCelebration();
+            }
+        });
+
+        function goToStage(fromStage, toStage) {
+            fromStage.classList.remove('active');
+            setTimeout(() => {
+                toStage.classList.add('active');
+            }, 300);
+        }
+
+        // =========================================================================
+        // STAGE 3 LOGIC (CELEBRATION & CONFETTI)
+        // =========================================================================
+
+        function triggerCelebration() {
+            if (typeof confetti === 'function') {
+                // First burst
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 },
+                    colors: ['#f43f5e', '#fb7185', '#fda4af', '#ffffff']
+                });
+
+                // Fireworks delay
+                setTimeout(() => {
+                    confetti({
+                        particleCount: 80,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        colors: ['#f43f5e', '#fb7185', '#ffd1d9']
+                    });
+                    confetti({
+                        particleCount: 80,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        colors: ['#f43f5e', '#fb7185', '#ffd1d9']
+                    });
+                }, 300);
+            }
+        }
+
+        // =========================================================================
+        // BACKGROUND FLOATING HEARTS ANIMATION
+        // =========================================================================
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        class FloatingHeart {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = height + Math.random() * 50;
+                this.size = Math.random() * 12 + 6;
+                this.speedY = Math.random() * 1.2 + 0.5;
+                this.speedX = Math.sin(Math.random() * Math.PI) * 0.6;
+                this.opacity = Math.random() * 0.5 + 0.2;
+                this.color = `hsla(${Math.random() * 20 + 340}, 85%, 70%, ${this.opacity})`;
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += this.speedX;
+                if (this.y < -30) this.reset();
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                const d = this.size;
+                ctx.moveTo(0, 0);
+                ctx.bezierCurveTo(-d / 2, -d / 2, -d, d / 3, 0, d);
+                ctx.bezierCurveTo(d, d / 3, d / 2, -d / 2, 0, 0);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const hearts = Array.from({ length: 25 }, () => new FloatingHeart());
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            hearts.forEach(heart => {
+                heart.update();
+                heart.draw();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.onload = function() {
+            animateCanvas();
+        };
+
+        function triggerHeartBurst() {
+            for (let i = 0; i < 12; i++) {
+                const burstHeart = new FloatingHeart();
+                burstHeart.x = width / 2;
+                burstHeart.y = height / 2;
+                burstHeart.speedY = (Math.random() - 0.5) * 5;
+                burstHeart.speedX = (Math.random() - 0.5) * 5;
+                hearts.push(burstHeart);
+                setTimeout(() => hearts.shift(), 2000);
+            }
+        }
+    </script>
+</body>
+</html>
