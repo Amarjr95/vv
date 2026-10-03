@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veux-tu être ma petite copine ? ❤️</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #fff5f7 0%, #fed6e3 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .font-cursive {
+            font-family: 'Dancing Script', cursive;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .heart-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-12px) rotate(3deg); }
+        }
+
+        .btn-bounce {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .btn-bounce:hover {
+            transform: scale(1.08);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4 text-slate-800">
+
+    <!-- ARRIÈRE-PLAN DÉCORATIF -->
+    <div class="fixed inset-0 pointer-events-none overflow-hidden -z-10 opacity-40">
+        <div class="absolute top-10 left-10 text-pink-300 text-4xl heart-float" style="animation-delay: 0s;">💖</div>
+        <div class="absolute top-1/4 right-12 text-pink-400 text-3xl heart-float" style="animation-delay: 1s;">✨</div>
+        <div class="absolute bottom-20 left-1/3 text-rose-300 text-5xl heart-float" style="animation-delay: 1.5s;">💕</div>
+        <div class="absolute bottom-10 right-1/4 text-pink-300 text-4xl heart-float" style="animation-delay: 0.5s;">🌹</div>
+    </div>
+
+    <!-- ÉTAPE 1 : LA QUESTION -->
+    <div id="step-question" class="w-full max-w-md glass-card rounded-3xl p-8 shadow-2xl border border-white/60 text-center relative transition-all duration-500">
+        <div class="text-6xl mb-4 heart-float">💌</div>
+        <h1 class="text-3xl font-bold text-rose-600 font-cursive mb-3">Une petite question...</h1>
+        <p class="text-lg text-slate-700 font-medium mb-8">Veux-tu être ma petite copine ? 💕</p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 relative min-h-[100px]" id="buttons-container">
+            <button id="btn-yes" onclick="goToGallery()" class="btn-bounce w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-semibold rounded-full shadow-lg shadow-rose-200 text-lg flex items-center justify-center gap-2">
+                <span>Oui ! 💖</span>
+            </button>
+            
+            <button id="btn-no" onmouseover="moveNoButton()" onclick="moveNoButton()" class="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium rounded-full transition-all duration-200 text-base">
+                <span>Non 🙈</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 2 : LE CARROUSEL DES SOUVENIRS (VIDÉOS & IMAGES) -->
+    <div id="step-gallery" class="hidden w-full max-w-md glass-card rounded-3xl p-6 shadow-2xl border border-white/60 text-center transition-all duration-500">
+        <div class="flex justify-between items-center mb-4 px-2">
+            <span class="text-sm font-semibold text-rose-500 bg-rose-50 px-3 py-1 rounded-full border border-rose-100">
+                Nos Souvenirs ✨ (<span id="current-index">1</span>/<span id="total-count">4</span>)
+            </span>
+            <span class="text-xs text-slate-400">Glisse ou clique sur Suivant</span>
+        </div>
+
+        <!-- CONTENEUR MÉDIA (IMAGE OU VIDÉO) -->
+        <div class="relative w-full aspect-[4/5] bg-slate-100 rounded-2xl overflow-hidden shadow-inner mb-4 flex items-center justify-center">
+            
+            <!-- Balise pour les Images -->
+            <img id="media-image" src="" alt="Souvenir" class="w-full h-full object-cover hidden">
+            
+            <!-- Balise pour les Vidéos -->
+            <video id="media-video" class="w-full h-full object-cover hidden" controls playsinline loop preload="metadata">
+                <source src="" type="video/mp4">
+                Votre navigateur ne supporte pas la lecture de vidéos.
+            </video>
+
+        </div>
+
+        <!-- LÉGENDE DE LA PHOTO/VIDÉO -->
+        <p id="media-caption" class="text-slate-700 font-medium text-base mb-6 min-h-[48px] flex items-center justify-center px-2">
+            Chargement...
+        </p>
+
+        <!-- BOUTONS DE NAVIGATION -->
+        <div class="flex items-center justify-between gap-3">
+            <button id="btn-prev" onclick="changeMedia(-1)" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1">
+                <i class="fa-solid fa-chevron-left text-xs"></i> Précédent
+            </button>
+
+            <button id="btn-next" onclick="changeMedia(1)" class="flex-1 py-3 bg-rose-500 hover:bg-rose-600 text-white font-semibold rounded-xl shadow-md shadow-rose-200 transition-all flex items-center justify-center gap-2">
+                <span>Suivant</span> <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- ÉTAPE 3 : FÉLICITATIONS FINALES -->
+    <div id="step-final" class="hidden w-full max-w-md glass-card rounded-3xl p-8 shadow-2xl border border-white/60 text-center transition-all duration-500">
+        <div class="text-7xl mb-4 heart-float">🎉❤️</div>
+        <h2 class="text-4xl font-bold text-rose-600 font-cursive mb-3">Félicitations !</h2>
+        <p class="text-lg text-slate-700 font-medium mb-6">
+            Je suis le plus heureux ! Merci d'être dans ma vie 💕
+        </p>
+        <div class="p-4 bg-rose-50/80 rounded-2xl border border-rose-100 mb-6">
+            <p class="text-rose-700 font-semibold text-sm">Hâte de créer encore plein d'autres beaux souvenirs ensemble ✨</p>
+        </div>
+        <button onclick="location.reload()" class="text-xs text-slate-400 hover:text-slate-600 underline">
+            Revoir depuis le début
+        </button>
+    </div>
+
+    <script>
+        /* ====================================================================
+           CONFIGURATEUR DE VOS MÉDIAS (VIDÉOS & IMAGES)
+           ==================================================================== */
+        const mediaItems = [
+            {
+                type: 'video',
+                url: 'video1.mp4', // <-- Remplace par le lien de ta 1ère vidéo
+                caption: 'Notre tout premier souvenir ensemble en vidéo 🎥❤️'
+            },
+            {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80', // <-- Remplace par le lien de ta 1ère image
+                caption: 'Un moment inoubliable gravé dans ma mémoire ✨'
+            },
+            {
+                type: 'video',
+                url: 'video2.mp4', // <-- Remplace par le lien de ta 2ème vidéo
+                caption: 'Un autre super souvenir trop mignon ! 🎬💕'
+            },
+            {
+                type: 'image',
+                url: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80', // <-- Remplace par le lien de ta 2ème image
+                caption: 'Pour toujours à tes côtés 💖'
+            }
+        ];
+
+        let currentIndex = 0;
+
+        // Bouton "Non" qui esquive la souris
+        function moveNoButton() {
+            const btnNo = document.getElementById('btn-no');
+            const x = Math.random() * (window.innerWidth - 120) - (window.innerWidth / 2 - 60);
+            const y = Math.random() * 200 - 100;
+            btnNo.style.transform = `translate(${x}px, ${y}px)`;
+        }
+
+        // Passer de l'étape 1 à la galerie
+        function goToGallery() {
+            document.getElementById('step-question').classList.add('hidden');
+            document.getElementById('step-gallery').classList.remove('hidden');
+            document.getElementById('total-count').textContent = mediaItems.length;
+            renderMedia();
+        }
+
+        // Afficher le média en cours
+        function renderMedia() {
+            const item = mediaItems[currentIndex];
+            const imgEl = document.getElementById('media-image');
+            const videoEl = document.getElementById('media-video');
+            const captionEl = document.getElementById('media-caption');
+            
+            document.getElementById('current-index').textContent = currentIndex + 1;
+            captionEl.textContent = item.caption;
+
+            // Mettre en pause la vidéo précédente si elle tournait
+            videoEl.pause();
+
+            if (item.type === 'video') {
+                imgEl.classList.add('hidden');
+                videoEl.classList.remove('hidden');
+                videoEl.src = item.url;
+                videoEl.load();
+                videoEl.play().catch(() => {
+                    // Si la lecture automatique avec du son est bloquée par le navigateur
+                });
+            } else {
+                videoEl.classList.add('hidden');
+                imgEl.classList.remove('hidden');
+                imgEl.src = item.url;
+            }
+
+            // Gérer les états des boutons
+            document.getElementById('btn-prev').disabled = (currentIndex === 0);
+            
+            const btnNext = document.getElementById('btn-next');
+            if (currentIndex === mediaItems.length - 1) {
+                btnNext.innerHTML = '<span>Terminer 💖</span>';
+                btnNext.classList.remove('bg-rose-500', 'hover:bg-rose-600');
+                btnNext.classList.add('bg-emerald-500', 'hover:bg-emerald-600');
+            } else {
+                btnNext.innerHTML = '<span>Suivant</span> <i class="fa-solid fa-chevron-right text-xs"></i>';
+                btnNext.classList.remove('bg-emerald-500', 'hover:bg-emerald-600');
+                btnNext.classList.add('bg-rose-500', 'hover:bg-rose-600');
+            }
+        }
+
+        // Naviguer dans le carrousel
+        function changeMedia(direction) {
+            if (direction === 1 && currentIndex === mediaItems.length - 1) {
+                // Fin de la galerie -> Étape finale
+                document.getElementById('step-gallery').classList.add('hidden');
+                document.getElementById('step-final').classList.remove('hidden');
+                triggerConfetti();
+                return;
+            }
+
+            currentIndex += direction;
+            if (currentIndex < 0) currentIndex = 0;
+            if (currentIndex >= mediaItems.length) currentIndex = mediaItems.length - 1;
+
+            renderMedia();
+        }
+
+        // Animation de confettis
+        function triggerConfetti() {
+            confetti({
+                particleCount: 120,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+        }
+    </script>
+</body>
+</html>
