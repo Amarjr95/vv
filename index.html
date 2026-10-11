@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VV WIFEY</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Ma+Shan+Zheng&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: {
+                            50: '#fff0f3',
+                            100: '#ffe4e8',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                        },
+                        romantic: {
+                            gold: '#d4af37',
+                            softPink: '#f8bbd0',
+                            deepBerry: '#880e4f',
+                            plum: '#4a148c',
+                            warmBlush: '#f48fb1'
+                        }
+                    },
+                    fontFamily: {
+                        chinese: ['"Ma Shan Zheng"', 'serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                        cursive: ['"Dancing Script"', 'cursive'],
+                        sans: ['"Montserrat"', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 7s ease-in-out 3s infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2.5s ease-in-out infinite alternate',
+                        'soft-bounce': 'softBounce 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-15px) rotate(2deg)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 15px rgba(244, 63, 94, 0.3)' },
+                            '100%': { boxShadow: '0 0 35px rgba(244, 63, 94, 0.7), 0 0 15px rgba(212, 175, 55, 0.5)' },
+                        },
+                        softBounce: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/css">
+        /* Fond dégradé rose doux poudré -> pastel lumineux au scroll */
+        body {
+            background: linear-gradient(180deg, 
+                #f8bbd0 0%, 
+                #f48fb1 25%, 
+                #f8bbd0 50%, 
+                #fce4ec 75%, 
+                #fff0f3 100%);
+            background-attachment: fixed;
+            color: #4a148c;
+            overflow-x: hidden;
+        }
+
+        /* Cartes effet verre PÂLE & TRANSLUCIDE (permet de voir à travers les cartes au scroll) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.32);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 12px 35px 0 rgba(136, 14, 79, 0.06);
+        }
+
+        .glass-card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-6px) scale(1.01);
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 20px 50px 0 rgba(136, 14, 79, 0.12);
+            border-color: rgba(244, 63, 94, 0.4);
+        }
+
+        /* Effet de texte dégradé métallisé rosé/doré */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #ad1457 0%, #d81b60 40%, #c2185b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-rose {
+            background: linear-gradient(135deg, #880e4f 0%, #ad1457 50%, #d81b60 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Canvas interactif en arrière-plan */
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Effet Polaroid */
+        .polaroid {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 12px 24px 12px;
+            box-shadow: 0 10px 25px rgba(136, 14, 79, 0.12);
+            transition: all 0.4s ease;
+        }
+        .polaroid:hover {
+            transform: scale(1.04) rotate(0deg) !important;
+            box-shadow: 0 20px 35px rgba(136, 14, 79, 0.22);
+            z-index: 30;
+        }
+
+        /* Animation enveloppe */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+        .envelope {
+            transition: transform 0.6s ease;
+            transform-style: preserve-3d;
+        }
+        .envelope.open {
+            transform: rotateX(180deg);
+        }
+
+        /* Masquage de la scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(248, 187, 208, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(244, 63, 94, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(244, 63, 94, 0.7);
+        }
+    </style>
+</head>
+<body class="min-h-screen relative font-sans antialiased selection:bg-rose-500 selection:text-white">
+
+    <!-- Canvas de particules de cœurs & étincelles -->
+    <canvas id="heartCanvas"></canvas>
+
+    <!-- ÉLÉMENTS DE FOND TRANSLUCIDES (Hello Kitty + 4 Nouvelles Photos Souvenirs Flottantes) -->
+    <div class="pointer-events-none fixed inset-0 z-10 overflow-hidden">
+        
+        <!-- --- HELLO KITTY STICKERS --- -->
+        <!-- HK 1: Rose en haut à droite -->
+        <div class="absolute top-24 right-3 md:right-12 w-28 md:w-40 opacity-40 hover:opacity-90 transition-all duration-500 transform rotate-6 hover:scale-105 pointer-events-auto">
+            <img src="hkrose.jpg" onerror="this.onerror=null; this.src='Photovv&me/hkrose.jpg'" alt="Hello Kitty Rose" class="w-full h-auto rounded-2xl shadow-lg border border-white/40">
+        </div>
+
+        <!-- HK 2: Les peluches mariées au milieu à gauche -->
+        <div class="absolute top-[35%] left-2 md:left-8 w-32 md:w-48 opacity-40 hover:opacity-90 transition-all duration-500 transform -rotate-6 hover:scale-105 pointer-events-auto">
+            <img src="dear2.jpg" onerror="this.onerror=null; this.src='Photovv&me/dear2.jpg'" alt="Hello Kitty Dear 2" class="w-full h-auto rounded-2xl shadow-lg border border-white/40">
+        </div>
+
+        <!-- HK 3: Balade nature à droite vers le bas -->
+        <div class="absolute top-[62%] right-2 md:right-10 w-32 md:w-44 opacity-40 hover:opacity-90 transition-all duration-500 transform rotate-8 hover:scale-105 pointer-events-auto">
+            <img src="dear.jpg" onerror="this.onerror=null; this.src='Photovv&me/dear.jpg'" alt="Hello Kitty Dear" class="w-full h-auto rounded-2xl shadow-lg border border-white/40">
+        </div>
+
+        <!-- HK 4: Assis classique en bas à gauche -->
+        <div class="absolute bottom-16 left-3 md:left-12 w-24 md:w-36 opacity-40 hover:opacity-90 transition-all duration-500 transform -rotate-8 hover:scale-105 pointer-events-auto">
+            <img src="HK.jpg" onerror="this.onerror=null; this.src='Photovv&me/HK.jpg'" alt="Hello Kitty Classic" class="w-full h-auto rounded-2xl shadow-lg border border-white/40">
+        </div>
+
+        <!-- --- 4 NOUVELLES PHOTOS SOUVENIRS FLOTTANTES --- -->
+        <!-- Souvenir 1: Haut Gauche (Sous le titre) -->
+        <div class="absolute top-16 left-3 md:left-14 w-28 md:w-44 opacity-45 hover:opacity-90 transition-all duration-500 transform -rotate-12 animate-float pointer-events-auto">
+            <div class="p-2 bg-white/70 rounded-xl shadow-md border border-white/60 backdrop-blur-xs">
+                <img src="souvenir1.jpg" onerror="this.onerror=null; this.src='Photovv&me/souvenir1.jpg';" alt="Souvenir 1" class="w-full h-auto rounded-lg object-cover aspect-square">
+            </div>
+        </div>
+
+        <!-- Souvenir 2: Milieu Droite (Sous le Compteur) -->
+        <div class="absolute top-[42%] right-3 md:right-16 w-32 md:w-48 opacity-45 hover:opacity-90 transition-all duration-500 transform rotate-12 animate-float-delayed pointer-events-auto">
+            <div class="p-2 bg-white/70 rounded-xl shadow-md border border-white/60 backdrop-blur-xs">
+                <img src="souvenir2.jpg" onerror="this.onerror=null; this.src='Photovv&me/souvenir2.jpg';" alt="Souvenir 2" class="w-full h-auto rounded-lg object-cover aspect-square">
+            </div>
+        </div>
+
+        <!-- Souvenir 3: Gauche (Niveau Vidéo/Lettre) -->
+        <div class="absolute top-[72%] left-2 md:left-10 w-32 md:w-48 opacity-45 hover:opacity-90 transition-all duration-500 transform -rotate-8 animate-float pointer-events-auto">
+            <div class="p-2 bg-white/70 rounded-xl shadow-md border border-white/60 backdrop-blur-xs">
+                <img src="souvenir3.jpg" onerror="this.onerror=null; this.src='Photovv&me/souvenir3.jpg';" alt="Souvenir 3" class="w-full h-auto rounded-lg object-cover aspect-square">
+            </div>
+        </div>
+
+        <!-- Souvenir 4: Bas Droite (Niveau Raisons d'amour) -->
+        <div class="absolute bottom-32 right-4 md:right-14 w-28 md:w-44 opacity-45 hover:opacity-90 transition-all duration-500 transform rotate-10 animate-float-delayed pointer-events-auto">
+            <div class="p-2 bg-white/70 rounded-xl shadow-md border border-white/60 backdrop-blur-xs">
+                <img src="souvenir4.jpg" onerror="this.onerror=null; this.src='Photovv&me/souvenir4.jpg';" alt="Souvenir 4" class="w-full h-auto rounded-lg object-cover aspect-square">
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Conteneur principal -->
+    <div class="relative z-20 max-w-5xl mx-auto px-4 py-8 md:py-16 flex flex-col items-center gap-12 md:gap-20">
+
+        <!-- En-tête / Widget Musique Discret (Cyndi Wang - 1 Min) -->
+        <header class="w-full flex justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-rose-500/20 border border-rose-400/30 flex items-center justify-center text-rose-600 animate-pulse">
+                    <i class="fa-solid fa-heart text-lg"></i>
+                </div>
+                <span class="font-cursive text-2xl text-rose-800 font-bold tracking-wide">18.02.2023</span>
+            </div>
+
+            <!-- Widget Audio Autonome (1 Min Cyndi Wang) -->
+            <div class="glass-card px-4 py-2.5 rounded-2xl flex items-center gap-3 border border-rose-200/60 shadow-md">
+                <button id="audioToggleBtn" onclick="toggleAudio()" class="w-10 h-10 rounded-full bg-gradient-to-r from-rose-500 to-pink-500 text-white flex items-center justify-center hover:scale-105 transition-transform shadow-md focus:outline-none">
+                    <i id="audioIcon" class="fa-solid fa-play text-sm ml-0.5"></i>
+                </button>
+                <div class="flex flex-col min-w-[120px] md:min-w-[150px]">
+                    <span class="text-xs font-semibold text-rose-900 truncate">王心凌 – 《爱你》</span>
+                    <div class="w-full bg-rose-200/60 h-1.5 rounded-full overflow-hidden mt-1">
+                        <div id="audioProgressBar" class="bg-gradient-to-r from-rose-500 to-pink-500 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    <span id="audioTimerText" class="text-[10px] text-rose-700/80 mt-0.5 text-right font-mono">0:00 / 1:00</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Élément audio HTML5 direct -->
+        <audio id="cyndiAudio" preload="auto">
+            <source src="aini.mp3" type="audio/mpeg">
+            <source src="AiNi.mp3" type="audio/mpeg">
+            <source src="music.mp3" type="audio/mpeg">
+            <source src="Photovv&me/aini.mp3" type="audio/mpeg">
+            <source src="Photovv&me/music.mp3" type="audio/mpeg">
+        </audio>
+
+        <!-- Section Hero principal -->
+        <section class="text-center flex flex-col items-center gap-6 mt-4 md:mt-8 max-w-3xl">
+            <!-- Titre principal en chinois -->
+            <h1 class="font-chinese text-6xl sm:text-7xl md:text-8xl text-gradient-gold drop-shadow-md tracking-wider animate-float py-2">
+                我的太阳
+            </h1>
+
+            <!-- Sous-titre -->
+            <p class="font-serif italic text-2xl sm:text-3xl text-rose-900 font-medium tracking-wide">
+                « Special to me »
+            </p>
+
+            <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-rose-400 to-transparent my-2"></div>
+
+            <!-- Bouton d'action principal avec explosion de cœurs & son -->
+            <button onclick="triggerLoveExplosion()" class="group relative px-8 py-4 rounded-full bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 text-white font-semibold text-lg shadow-lg hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 animate-glow overflow-hidden">
+                <span class="relative z-10 flex items-center gap-3">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-200 group-hover:rotate-12 transition-transform"></i>
+                    Explosion d'Amour
+                    <i class="fa-solid fa-heart text-rose-200 group-hover:scale-125 transition-transform"></i>
+                </span>
+                <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            </button>
+        </section>
+
+        <!-- Compteur de temps depuis le 18 Février 2023 à 20:00 -->
+        <section class="w-full glass-card rounded-3xl p-6 md:p-10 border border-rose-200/80 shadow-xl text-center">
+            <div class="flex items-center justify-center gap-2 mb-6">
+                <i class="fa-solid fa-clock text-rose-500 text-xl"></i>
+                <h2 class="text-xl md:text-2xl font-serif font-bold text-rose-900">Ensemble depuis le 18 Février 2023 à 20h00</h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <div class="p-4 rounded-2xl bg-white/40 border border-rose-100 shadow-sm flex flex-col">
+                    <span id="daysCount" class="text-3xl md:text-5xl font-extrabold text-gradient-rose">0</span>
+                    <span class="text-xs md:text-sm font-medium text-rose-800 uppercase tracking-wider mt-1">Jours</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-white/40 border border-rose-100 shadow-sm flex flex-col">
+                    <span id="hoursCount" class="text-3xl md:text-5xl font-extrabold text-gradient-rose">0</span>
+                    <span class="text-xs md:text-sm font-medium text-rose-800 uppercase tracking-wider mt-1">Heures</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-white/40 border border-rose-100 shadow-sm flex flex-col">
+                    <span id="minutesCount" class="text-3xl md:text-5xl font-extrabold text-gradient-rose">0</span>
+                    <span class="text-xs md:text-sm font-medium text-rose-800 uppercase tracking-wider mt-1">Minutes</span>
+                </div>
+                <div class="p-4 rounded-2xl bg-white/40 border border-rose-100 shadow-sm flex flex-col">
+                    <span id="secondsCount" class="text-3xl md:text-5xl font-extrabold text-gradient-rose">0</span>
+                    <span class="text-xs md:text-sm font-medium text-rose-800 uppercase tracking-wider mt-1">Secondes</span>
+                </div>
+            </div>
+
+            <!-- Battements de cœur estimés -->
+            <div class="mt-8 pt-6 border-t border-rose-200/60 flex flex-col md:flex-row items-center justify-center gap-3 text-rose-800">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-heart-pulse text-rose-600 text-2xl animate-bounce"></i>
+                    <span class="text-sm md:text-base font-medium">Mon cœur a battu environ</span>
+                </div>
+                <span id="heartbeatsCount" class="text-2xl font-bold text-rose-700 font-mono">0</span>
+                <span class="text-sm md:text-base font-medium">fois pour toi depuis notre rencontre.</span>
+            </div>
+        </section>
+
+        <!-- Section Galerie Polaroid -->
+        <section class="w-full flex flex-col items-center gap-8">
+            <div class="text-center">
+                <h2 class="text-3xl md:text-4xl font-serif font-bold text-rose-900">Nos Moments Précieux</h2>
+                <p class="text-rose-700 font-cursive text-xl mt-1">Chaque souvenir est un trésor...</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full">
+                <!-- Photo 1 (IMGL7711.JPG) -->
+                <div class="polaroid rounded-lg transform -rotate-3 transition-transform">
+                    <div class="relative aspect-[4/5] bg-rose-100/60 rounded overflow-hidden">
+                        <img src="nous.jpeg" onerror="this.onerror=null; this.src='Photovvme/IMGL7711.JPG'" alt="Notre souvenir" class="w-full h-full object-cover">
+                    </div>
+                    <p class="font-cursive text-2xl text-center text-rose-900 mt-4 font-bold">Toi & Moi</p>
+                    <p class="text-xs text-center text-rose-600 font-medium">Le début de notre belle histoire</p>
+                </div>
+
+                <!-- Photo 2 (Coco) -->
+                <div class="polaroid rounded-lg transform rotate-2 transition-transform">
+                    <div class="relative aspect-[4/5] bg-rose-100/60 rounded overflow-hidden">
+                        <img src="koko.jpeg" onerror="this.onerror=null; this.src='koko.jpeg';" alt="Coco" class="w-full h-full object-cover">
+                    </div>
+                    <p class="font-cursive text-2xl text-center text-rose-900 mt-4 font-bold">Coco</p>
+                    <p class="text-xs text-center text-rose-600 font-medium">repose en paix koko (je t'aime grand)</p>
+                </div>
+
+                <!-- Photo 3 (Pour l'Éternité) -->
+                <div class="polaroid rounded-lg transform -rotate-2 transition-transform">
+                    <div class="relative aspect-[4/5] bg-rose-100/60 rounded overflow-hidden">
+                        <img src="nous2.jpeg" onerror="this.onerror=null; this.src='projet.jpg'; this.onerror=function(){this.src='Photovv&me/eternite.jpg';}" alt="Pour l'éternité" class="w-full h-full object-cover">
+                    </div>
+                    <p class="font-cursive text-2xl text-center text-rose-900 mt-4 font-bold">Pour l'Éternité</p>
+                    <p class="text-xs text-center text-rose-600 font-medium">Mille projets à venir...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Vidéo -->
+        <section class="w-full glass-card rounded-3xl p-6 md:p-8 border border-rose-200 shadow-xl flex flex-col items-center gap-6">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-rose-100/80 text-rose-600 mb-2">
+                    <i class="fa-solid fa-film text-xl"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-serif font-bold text-rose-900">Notre Vidéo Souvenir</h2>
+                <p class="text-rose-700 font-cursive text-lg">Un instant gravé à jamais...</p>
+            </div>
+
+            <!-- Balise Vidéo HTML5 autonome -->
+            <div class="w-full max-w-2xl rounded-2xl overflow-hidden shadow-2xl bg-black border-2 border-rose-300/60 aspect-video relative">
+                <video id="romanticVideo" class="w-full h-full object-cover" controls playsinline preload="metadata">
+                    <source src="kokokami.mp4" type="video/mp4">
+                    <source src="aini.mp4" type="video/mp4">
+                    <source src="AiNi.mp4" type="video/mp4">
+                    <source src="Photovv&me/video.mp4" type="video/mp4">
+                    Votre navigateur ne supporte pas la lecture de vidéo.
+                </video>
+            </div>
+        </section>
+
+        <!-- Section Lettre d'Amour Interactive ("Letter to Wifey") -->
+        <section class="w-full max-w-2xl glass-card rounded-3xl p-8 md:p-12 border border-rose-200/80 shadow-2xl relative overflow-hidden">
+            <div class="text-center mb-8">
+                <span class="px-4 py-1.5 rounded-full bg-rose-100/80 text-rose-700 text-xs font-semibold uppercase tracking-widest">Message personnel</span>
+                <h2 class="text-3xl md:text-4xl font-serif font-bold text-rose-900 mt-3">Letter to Wifey</h2>
+                <p class="text-rose-600 font-cursive text-xl mt-1">lam</p>
+            </div>
+
+            <div class="relative bg-white/50 p-6 md:p-10 rounded-2xl border border-rose-100/80 shadow-inner font-serif text-rose-900 leading-relaxed text-base md:text-lg backdrop-blur-xs">
+                <p class="font-semibold text-rose-800 text-xl mb-4">À mon ptit soleil,</p>
+                <p class="mb-4">
+                    pas grand chose a dire tu es une fille rayonnante souriante jolie, un peu faignante a cause de moi lol ( je te gate trop ;)
+                </p>
+                <div class="text-right mt-8 pt-4 border-t border-rose-200/50">
+                    <p class="font-cursive text-3xl text-rose-700 font-bold">Pour toujours ❤️</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Générateur de raisons "Pourquoi je t'aime" -->
+        <section class="w-full glass-card rounded-3xl p-6 md:p-10 border border-rose-200 shadow-xl text-center flex flex-col items-center gap-6">
+            <h2 class="text-2xl md:text-3xl font-serif font-bold text-rose-900">Pourquoi Je T'aime ?</h2>
+            
+            <div id="reasonBox" class="min-h-[100px] flex items-center justify-center p-6 rounded-2xl bg-white/50 border border-rose-200 w-full max-w-xl transition-all duration-300 backdrop-blur-xs">
+                <p id="reasonText" class="font-serif italic text-lg md:text-xl text-rose-900 font-medium">
+                    Clique sur le bouton ci-dessous pour découvrir une raison...
+                </p>
+            </div>
+
+            <button onclick="generateLoveReason()" class="px-6 py-3 rounded-full bg-rose-500 text-white font-medium hover:bg-rose-600 transition-colors shadow-md flex items-center gap-2">
+                <i class="fa-solid fa-dice text-rose-200"></i>
+                Une autre raison ❤️
+            </button>
+        </section>
+
+        <!-- Pied de page -->
+        <footer class="text-center text-rose-700/80 text-xs md:text-sm pt-8 border-t border-rose-200/40 w-full">
+            <p class="font-cursive text-2xl text-rose-800 font-bold mb-1">我的太阳 — Toujours à tes côtés</p>
+            <p>Fait avec tout mon amour pour toi ❤️</p>
+        </footer>
+
+    </div>
+
+    <!-- Script de logique interactive -->
+    <script>
+        // --- 1. Moteur de Particules Canvas (Cœurs et Étincelles) ---
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor(x, y, isExplosion = false) {
+                this.x = x || Math.random() * canvas.width;
+                this.y = y || (isExplosion ? canvas.height / 2 : canvas.height + 20);
+                this.size = Math.random() * 12 + 6;
+                this.speedY = isExplosion ? (Math.random() - 0.5) * 12 : -Math.random() * 1.8 - 0.5;
+                this.speedX = isExplosion ? (Math.random() - 0.5) * 12 : (Math.random() - 0.5) * 0.8;
+                this.opacity = Math.random() * 0.6 + 0.4;
+                this.color = Math.random() > 0.3 ? '#f43f5e' : (Math.random() > 0.5 ? '#fb7185' : '#d4af37');
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotSpeed = (Math.random() - 0.5) * 0.05;
+                this.type = Math.random() > 0.2 ? 'heart' : 'star';
+                this.life = 1;
+                this.decay = isExplosion ? Math.random() * 0.015 + 0.005 : 0.002;
+            }
+
+            drawHeart(x, y, size) {
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.bezierCurveTo(x - size / 2, y - size / 2, x - size, y + size / 3, x, y + size);
+                ctx.bezierCurveTo(x + size, y + size / 3, x + size / 2, y - size / 2, x, y);
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            drawStar(x, y, size) {
+                ctx.beginPath();
+                for (let i = 0; i < 5; i++) {
+                    ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * size + x, -Math.sin((18 + i * 72) * Math.PI / 180) * size + y);
+                    ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * (size / 2) + x, -Math.sin((54 + i * 72) * Math.PI / 180) * (size / 2) + y);
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                this.rotation += this.rotSpeed;
+                this.life -= this.decay;
+
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.opacity * this.life);
+                ctx.fillStyle = this.color;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+
+                if (this.type === 'heart') {
+                    this.drawHeart(0, 0, this.size);
+                } else {
+                    this.drawStar(0, 0, this.size / 2);
+                }
+
+                ctx.restore();
+            }
+        }
+
+        // Particules flottantes continues
+        for (let i = 0; i < 35; i++) {
+            particles.push(new Particle(Math.random() * window.innerWidth, Math.random() * window.innerHeight));
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.random() < 0.08) {
+                particles.push(new Particle());
+            }
+
+            particles.forEach((p, index) => {
+                p.update();
+                if (p.life <= 0 || p.y < -30) {
+                    particles.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        function triggerLoveExplosion() {
+            // Lancer la musique immédiatement
+            playExcerpt();
+
+            // Créer 60 cœurs en explosion
+            for (let i = 0; i < 60; i++) {
+                particles.push(new Particle(window.innerWidth / 2, window.innerHeight / 2, true));
+            }
+        }
+
+        // --- 2. Compteur d'Amour (depuis le 18 Février 2023 à 20:00) ---
+        const startDate = new Date(2023, 1, 18, 20, 0, 0); // Mois 1 = Février
+
+        function updateLoveCounter() {
+            const now = new Date();
+            const diff = now - startDate;
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((diff / (1000 * 60)) % 60);
+            const seconds = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('daysCount').innerText = days;
+            document.getElementById('hoursCount').innerText = hours;
+            document.getElementById('minutesCount').innerText = minutes;
+            document.getElementById('secondsCount').innerText = seconds;
+
+            // Estimation des battements de cœur (~72 bpm)
+            const beats = Math.floor((diff / 1000) * 1.2);
+            document.getElementById('heartbeatsCount').innerText = beats.toLocaleString('fr-FR');
+        }
+        setInterval(updateLoveCounter, 1000);
+        updateLoveCounter();
+
+        // --- 3. Gestionnaire Audio Cyndi Wang (1 Min) ---
+        const audio = document.getElementById('cyndiAudio');
+        const audioIcon = document.getElementById('audioIcon');
+        const audioProgressBar = document.getElementById('audioProgressBar');
+        const audioTimerText = document.getElementById('audioTimerText');
+
+        let isPlaying = false;
+        let audioTimer = null;
+        const DURATION = 60; // 60 secondes (1 minute)
+
+        function playExcerpt() {
+            if (audio) {
+                audio.currentTime = 55; // Calé sur le refrain
+                audio.play().then(() => {
+                    isPlaying = true;
+                    audioIcon.className = 'fa-solid fa-pause text-sm';
+                    startProgressTracker();
+                }).catch(err => {
+                    console.log("Audio waiting for user click.");
+                });
+            }
+        }
+
+        function toggleAudio() {
+            if (!audio) return;
+
+            if (isPlaying) {
+                audio.pause();
+                isPlaying = false;
+                audioIcon.className = 'fa-solid fa-play text-sm ml-0.5';
+                clearInterval(audioTimer);
+            } else {
+                if (audio.currentTime < 55 || audio.currentTime >= 115) {
+                    audio.currentTime = 55;
+                }
+                audio.play().then(() => {
+                    isPlaying = true;
+                    audioIcon.className = 'fa-solid fa-pause text-sm';
+                    startProgressTracker();
+                });
+            }
+        }
+
+        function startProgressTracker() {
+            clearInterval(audioTimer);
+            audioTimer = setInterval(() => {
+                if (!audio || !isPlaying) return;
+
+                const elapsed = audio.currentTime - 55;
+                if (elapsed >= DURATION || audio.ended) {
+                    audio.pause();
+                    isPlaying = false;
+                    audioIcon.className = 'fa-solid fa-play text-sm ml-0.5';
+                    audioProgressBar.style.width = '100%';
+                    audioTimerText.innerText = '1:00 / 1:00';
+                    clearInterval(audioTimer);
+                    return;
+                }
+
+                const currentSec = Math.min(DURATION, Math.max(0, Math.floor(elapsed)));
+                const pct = (currentSec / DURATION) * 100;
+                audioProgressBar.style.width = pct + '%';
+                
+                const secFormatted = currentSec < 10 ? '0' + currentSec : currentSec;
+                audioTimerText.innerText = `0:${secFormatted} / 1:00`;
+            }, 250);
+        }
+
+        // --- 4. Générateur "Pourquoi je t'aime" ---
+        const loveReasons = [
+            "Ton sourire illumine immédiatement ma journée.",
+            "Ta gentillesse et ta douceur envers moi.",
+            "La façon dont tu me regardes avec tendresse.",
+            "Tous nos fous rires et nos moments de complicité.",
+            "Parce que tu es ma meilleure amie et mon amour.",
+            "Parce que chaque jour à tes côtés est plus beau.",
+            "Ton caractère unique et ton charme fou.",
+            "Parce que tu es tout simplement mon petit soleil ❤️"
+        ];
+
+        function generateLoveReason() {
+            const reasonText = document.getElementById('reasonText');
+            const reasonBox = document.getElementById('reasonBox');
+
+            reasonBox.style.opacity = '0';
+            reasonBox.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * loveReasons.length);
+                reasonText.innerText = loveReasons[randomIndex];
+                reasonBox.style.opacity = '1';
+                reasonBox.style.transform = 'scale(1)';
+            }, 200);
+        }
+    </script>
+</body>
+</html>
