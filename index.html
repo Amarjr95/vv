@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VV WIFEY</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Ma+Shan+Zheng&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rose: {
+                            50: '#fff0f3',
+                            100: '#ffe4e8',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                        },
+                        romantic: {
+                            gold: '#d4af37',
+                            softPink: '#f8bbd0',
+                            deepBerry: '#880e4f',
+                            plum: '#4a148c',
+                            warmBlush: '#f48fb1'
+                        }
+                    },
+                    fontFamily: {
+                        chinese: ['"Ma Shan Zheng"', 'serif'],
+                        serif: ['"Playfair Display"', 'serif'],
+                        cursive: ['"Dancing Script"', 'cursive'],
+                        sans: ['"Montserrat"', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 7s ease-in-out 3s infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2.5s ease-in-out infinite alternate',
+                        'soft-bounce': 'softBounce 2s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-15px) rotate(2deg)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 15px rgba(244, 63, 94, 0.3)' },
+                            '100%': { boxShadow: '0 0 35px rgba(244, 63, 94, 0.7), 0 0 15px rgba(212, 175, 55, 0.5)' },
+                        },
+                        softBounce: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-8px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style type="text/css">
+        /* Fond dégradé rose doux poudré -> pastel lumineux au scroll */
+        body {
+            background: linear-gradient(180deg, 
+                #f8bbd0 0%, 
+                #f48fb1 25%, 
+                #f8bbd0 50%, 
+                #fce4ec 75%, 
+                #fff0f3 100%);
+            background-attachment: fixed;
+            color: #4a148c;
+            overflow-x: hidden;
+        }
+
+        /* Cartes effet verre PÂLE & TRANSLUCIDE */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.32);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 12px 35px 0 rgba(136, 14, 79, 0.06);
+        }
+
+        .glass-card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .glass-card-hover:hover {
+            transform: translateY(-6px) scale(1.01);
+            background: rgba(255, 255, 255, 0.45);
+            box-shadow: 0 20px 50px 0 rgba(136, 14, 79, 0.12);
+            border-color: rgba(244, 63, 94, 0.4);
+        }
+
+        /* Effet de texte dégradé métallisé rosé/doré */
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #ad1457 0%, #d81b60 40%, #c2185b 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .text-gradient-rose {
+            background: linear-gradient(135deg, #880e4f 0%, #ad1457 50%, #d81b60 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Canvas interactif en arrière-plan */
+        #heartCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Effet Polaroid */
+        .polaroid {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 12px 12px 24px 12px;
+            box-shadow: 0 10px 25px rgba(136, 14, 79, 0.12);
+            transition: all 0.4s ease;
+        }
+        .polaroid:hover {
+            transform: scale(1.04) rotate(0deg) !important;
+            box-shadow: 0 20px 35px rgba(136, 14, 79, 0.22);
+            z-index: 30;
+        }
+
+        /* Animation enveloppe */
+        .envelope-wrapper {
+            perspective: 1000px;
+        }
+        .envelope {
+            transition: transform 0.6s ease;
+            transform-style: preserve-3d;
+        }
+        .envelope.open {
+            transform: rotateX(180deg);
+        }
+
+        /* Masquage de la scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(248, 187, 208, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(244, 63, 94, 0.4);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(244, 63, 94, 0.7);
+        }
+    </style>
+</head>
+<body class="min-h-screen relative font-sans antialiased selection:bg-rose-500 selection:text-white">
+
+    <!-- Canvas de particules de cœurs & étincelles -->
+    <canvas id="heartCanvas"></canvas>
+
+    <!-- ÉLÉMENTS DE FOND TRANSLUCIDES (Hello Kitty + 4 Photos Souvenirs Repositionnées) -->
+    <div class="pointer-events-none fixed inset-0 z-10 overflow-hidden">
+        
+        <!-- --- HELLO KITTY STICKERS --- -->
+        <!-- HK 1: Rose en haut à droite -->
+        <div class="absolute top-24 right-3 md:right-12 w-28 md:w-4
